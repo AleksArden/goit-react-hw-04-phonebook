@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { nanoid } from 'nanoid';
 
 import { ContactForm } from 'components/ContactForm/ContactForm';
@@ -11,12 +11,6 @@ export const App = () => {
   const [contacts, setContacts] = useState(
     () => JSON.parse(window.localStorage.getItem('contacts')) ?? []
   );
-  const [filter, setFilter] = useState('');
-
-  useEffect(() => {
-    window.localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts]);
-
   const addContact = data => {
     const newContact = {
       id: nanoid(),
@@ -24,6 +18,12 @@ export const App = () => {
     };
     setContacts([...contacts, newContact]);
   };
+
+  useEffect(() => {
+    window.localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
+
+  const [filter, setFilter] = useState('');
   const handleSearch = ({ target: { value } }) => {
     setFilter(value);
   };
@@ -32,9 +32,11 @@ export const App = () => {
   };
 
   const normalizedFilter = filter.toLowerCase();
-  const filterContacts = contacts.filter(({ name }) =>
-    name.toLowerCase().includes(normalizedFilter)
-  );
+  const filterContacts = useMemo(() => {
+    return contacts.filter(({ name }) =>
+      name.toLowerCase().includes(normalizedFilter)
+    );
+  }, [contacts, normalizedFilter]);
   return (
     <div className={css.wrapper}>
       <h1 className={css.title}>Phonebook</h1>

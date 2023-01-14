@@ -27,7 +27,6 @@ export const ContactForm = ({ contacts, addContact }) => {
       : addContact({ name, number });
     hasSameName || (setName('') && hasSameName) || setNumber('');
   };
-
   return (
     <form className={css.form} onSubmit={handleSubmit}>
       <div className={css.wrapper}>
